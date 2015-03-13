@@ -428,7 +428,7 @@
             break;
 
           default:
-            throw Error("unknown event");
+            throw Error("unknown event: " + String(msg.event));
         }
       }, this);
     },

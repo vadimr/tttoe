@@ -12,7 +12,7 @@ WebSockets used for communication.
 
 ~ How can I run the web demo?
 
-	run `python webdemo.py --port=8888`
+	run `python server.py`
 	then open http://localhost:8888 in your browser.
 
 ~ How can I run the test?
@@ -23,6 +23,9 @@ TODO:
 * Move AI computations to workers (relax the tornado's ioloop).
 * More intelligent heuristics for AI
   (to reduce the recursion depth and make the game more fun).
+* Ability to control AI intelligence.
+* Ability to control the speed of AI moves.
 * Missing unit tests for tttoe and minimax packages.
+* Missing documentation.
 * Integration tests.
 * Attractive UI.
