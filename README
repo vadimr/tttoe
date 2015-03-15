@@ -6,16 +6,23 @@ WebSockets used for communication.
 
 ~ What do I need?
 
-  python3, pip
+  You can use Vagrant to get a development
+  environment (https://www.vagrantup.com/).
+  Install Vagrant, run `vagrant up && vagrant ssh`.
+  Now you're in a configured virtual machine (a vagrant box)
+  with all requirements installed. The project directory is
+  mapped to `/home/vagrant/tttoe` directory inside the box.
+
+  Without Vagrant, you need python3, pip
   To install required packages run `pip install -r requirements.txt`.
   I encourage you to use a virtualenv.
 
 ~ How can I run the web demo?
 
-	run `python server.py`
-	then open http://localhost:8888 in your browser.
+  run `python server.py`
+  then open http://localhost:8888 in your browser.
 
-~ How can I run the test?
+~ How can I run the tests?
 
   run `make`
 
