@@ -343,9 +343,13 @@
           data = msg.data;
 
         switch (msg.event) {
-          case "setup":
 
-            this._gameFieldView = new GameFieldView(data);
+          case "setup":
+            this._gameFieldView = new GameFieldView({
+              field: data.field,
+              playerHandle: data.player_handle,
+              signsMap: data.signs_map
+            });
             this.$el.prepend(this._gameFieldView.el);
 
             this._gameFieldView.on("movemade", function(x, y) {
@@ -361,10 +365,27 @@
                 "Send this url to your friend <%= url %>");
               var url = location.origin + "/#game/" + data.connection_game_id;
               this._infoLogView.log(template({url: url}));
+              this._infoLogView.log("(The first connected friend will be you opponent, the following connected friends will be spectators)");
             }
 
-            if (!this._gameFieldView.isLocked()) {
-              this._infoLogView.log("You first, make move.");
+            this._playerHandle = data.player_handle;
+            this._startPlayerHandle = data.start_player_handle;
+            this._signsMap = data.signs_map;
+
+            this._thisIsSpectator = this._playerHandle != "host" &&
+              this._playerHandle != "opponent";
+
+            if (this._thisIsSpectator) {
+              this._gameFieldView.lock();
+              this._infoLogView.log("You're an spectator, you can't make moves.");
+
+            } else {
+              if (this._startPlayerHandle !== this._playerHandle) {
+                this._gameFieldView.lock();
+                this._infoLogView.log("Your opponent first.");
+              } else {
+                this._infoLogView.log("You first, make move.");
+              }
             }
 
             break;
@@ -378,7 +399,7 @@
 
             // last move "move" event can arrive after the game is over.
             // Let's not unlock is this case.
-            if (!this._gameIsOver) {
+            if (!this._gameIsOver && !this._thisIsSpectator) {
               this._gameFieldView.unlock();
             }
 
@@ -403,7 +424,7 @@
               this._socket.close();
 
             } else if (data.player_handle === "opponent") {
-              this._infoLogView.log("Your oppenent left the game.");
+              this._infoLogView.log("The oppenent left the game.");
             } else {
               this._infoLogView.log("One spectator left the game.");
             }
@@ -417,12 +438,18 @@
 
             this._gameIsOver = true;
 
-            if (data.result_of_move === this._gameFieldView.getPlayerHandle()) {
+            if (data.result_of_move === this._playerHandle) {
               this._infoLogView.log("You won! Congratulations!", {color: "red"});
             } else if (data.result_of_move === "draw") {
               this._infoLogView.log("Nobody won. This is a draw.", {color: "red"});
             } else {
-              this._infoLogView.log("You lost.", {color: "red"});
+              if (this._thisIsSpectator) {
+                var template = _.template("Player \"<%= sign %>\" won.");
+                var sign = this._signsMap[data.result_of_move];
+                this._infoLogView.log(template({sign: sign}), {color: "red"});
+              } else {
+                this._infoLogView.log("You lost.", {color: "red"});
+              }
             }
             this._gameFieldView.lock();
             break;
@@ -463,28 +490,12 @@
     },
 
     initialize: function(options) {
-      this._fieldWidth = options.field_width;
-      this._fieldHeight = options.field_height;
       this._field = options.field;
-      this._playerHandle = options.player_handle;
-      this._startPlayerHandle = options.start_player_handle;
-      this._signsMap = options.signs_map;
-
+      this._playerHandle = options.playerHandle;
+      this._signsMap = options.signsMap;
       this._isLocked = false;
 
-      if (this._playerHandle != "host" && this._playerHandle != "opponent") {
-        this.lock();
-      }
-
-      if (this._startPlayerHandle !== this._playerHandle) {
-        this.lock();
-      }
-
       this.render();
-    },
-
-    getPlayerHandle: function() {
-      return this._playerHandle;
     },
 
     isLocked: function() {
@@ -509,8 +520,8 @@
             "<div class='cell' data-pos='<%= x %>,<%= y %>'><%= char %></div>");
         html = "";
 
-      for (y = 0; y < this._fieldHeight; y++) {
-        for (x = 0; x < this._fieldWidth; x++) {
+      for (x = 0; x < this._field.length; x++) {
+        for (y = 0; y < this._field[x].length; y++) {
           handle = this._field[x][y];
           char = handle ? this._signsMap[handle] : "";
           html += template({x: x, y: y, char: char});

@@ -5,28 +5,15 @@ class Game:
     def __init__(self, field_width, field_height, qty_to_win, \
             start_player_handle, host_char):
 
-        self._field_width = field_width
-        self._field_height = field_height
         self._start_player_handle = start_player_handle
         self._host_char = host_char
-
-        self._game_id = uuid.uuid4().hex
         self._spectators_count = 0
 
         self._players_hash = dict()
-
+        self._game_id = uuid.uuid4().hex
         self._is_over = False
 
-        self.game_state = GameState(self._field_width, self._field_height, \
-                qty_to_win)
-
-    @property
-    def field_width(self):
-        return self._field_width
-
-    @property
-    def field_height(self):
-        return self._field_height
+        self.game_state = GameState(field_width, field_height, qty_to_win)
 
     @property
     def start_player_handle(self):

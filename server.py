@@ -60,8 +60,6 @@ class GameWebSocket(WebSocketHandler):
             player_handle=self._player_handle,
             signs_map=dict(host=self._game.host_char, opponent=dict(x="o", o="x")[self._game.host_char]),
             start_player_handle=self._game.start_player_handle,
-            field_width=self._game.field_width,
-            field_height=self._game.field_height,
             field=self._game.game_state.field
             ))
         self.write_message(data)
