@@ -1,8 +1,10 @@
-	           Tictactoe demo.
+                              TTToe.
 
-Implements a simple engine for Tictactoe game.
+Implements a simple engine for Tictactoe game with a web interface.
 Modes: Human Vs Human, Human Vs AI, AI Vs AI.
 WebSockets used for communication.
+
+Demo: http://tttoe.herokuapp.com/
 
 ~ What do I need?
 
@@ -17,7 +19,7 @@ WebSockets used for communication.
   To install required packages run `pip install -r requirements.txt`.
   I encourage you to use a virtualenv.
 
-~ How can I run the web demo?
+~ How can I run the web/socket server?
 
   run `python server.py`
   then open http://localhost:8888 in your browser.
